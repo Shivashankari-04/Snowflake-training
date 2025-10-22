@@ -1,0 +1,30 @@
+-- Step 1: Creating Database and Schema
+
+CREATE OR REPLACE DATABASE RETAIL_DB;
+CREATE OR REPLACE SCHEMA RETAIL_DB.RETAIL_SCHEMA;
+
+-- Step 2: Creating a File Format for Reading CSV Files
+
+CREATE OR REPLACE FILE FORMAT RETAIL_DB.RETAIL_SCHEMA.csv_format
+  TYPE = 'CSV'
+  FIELD_DELIMITER = ',' 
+  SKIP_HEADER = 1
+  NULL_IF = ('NULL','')
+  TRIM_SPACE = TRUE;
+
+-- Step 3: Creating an External Stage Pointing to Azure Blob Storage
+
+  CREATE OR REPLACE STAGE RETAIL_DB.RETAIL_SCHEMA.azure_stage
+  URL='azure://hexadatastorage.blob.core.windows.net/retailsales'
+  FILE_FORMAT = RETAIL_DB.RETAIL_SCHEMA.csv_format
+  CREDENTIALS=(AZURE_SAS_TOKEN='sv=2024-11-04&ss=bfqt&srt=c&sp=rwdlacupyx&se=2025-10-23T00:07:02Z&st=2025-10-22T15:52:02Z&spr=https&sig=FHzkyOUIPwdGI0udqbsg6qJk1Jtw5MX6BwLU7cb%2FLVk%3D');
+
+-- Step 4: Verify Raw Data Loaded into the Staging Table
+
+SELECT * FROM RETAIL_SALES_RAW;
+
+-- Step 5: Verify Modeled Data After Transformations
+
+SELECT  * FROM  RETAIL_SALES_MODELED;
+
+
